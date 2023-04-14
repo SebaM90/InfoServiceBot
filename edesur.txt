@@ -1,0 +1,8 @@
+// URL: https://ov.edesur.com.ar/pagos-y-facturas
+
+let data = [];
+document.querySelectorAll('div.display-sm p').forEach( (el, index, lista) => {
+    if (index % 2 === 0) data.push({concepto: el.innerText, valor: lista[index+1]?.innerText});
+});
+
+console.table(data)
