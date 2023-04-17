@@ -14,13 +14,13 @@ export async function metrogas(browser) {
   await page.setDefaultTimeout(60000);
   await page.setDefaultNavigationTimeout(60000);
   
-  console.log(`✅ ${SERVICIO}: Ingresando...`);
+  console.log(`⌛ ${SERVICIO}: Ingresando...`);
   await page.goto(URL_LOGIN, { waitUntil: 'networkidle2' });
 
-  console.log(`✅ ${SERVICIO}: Esperando redirecciones`)
+  console.log(`⌛ ${SERVICIO}: Esperando redirecciones`)
   await page.waitForNavigation();
 
-  console.log(`✅ ${SERVICIO}: Esperando formulario`)
+  console.log(`⌛ ${SERVICIO}: Esperando formulario`)
   await page.waitForSelector(HTML_INPUT_EMAIL);
   await sleep(2000)
 
@@ -35,12 +35,13 @@ export async function metrogas(browser) {
   await page.waitForNavigation({waitUntil: 'networkidle2'});
   await page.waitForSelector('.sapMObjectNumberText');
 
-  console.log(`✅ ${SERVICIO}: Leyendo datos`)
+  console.log(`⌛ ${SERVICIO}: Leyendo datos`)
   const result = await page.$eval('.sapMObjectNumberText', span => span.innerText); // Deuda Total: $ 3.265,18
 
 
   // await sleep(1000);
   await page.close();
+  console.log(`✅ ${SERVICIO}: FIN.`)
   return {
     servicio: SERVICIO,
     '1er Vencimiento': '',

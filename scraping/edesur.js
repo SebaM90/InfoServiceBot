@@ -14,10 +14,10 @@ export async function edesur(browser) {
   await page.setDefaultTimeout(60000);
   await page.setDefaultNavigationTimeout(60000);
   
-  console.log(`✅ ${SERVICIO}: Ingresando...`);
+  console.log(`⌛ ${SERVICIO}: Ingresando...`);
   await page.goto(URL_LOGIN, { waitUntil: 'networkidle2' });
 
-  console.log(`✅ ${SERVICIO}: Enviando credenciales y haciendo login`)
+  console.log(`⌛ ${SERVICIO}: Enviando credenciales y haciendo login`)
   await page.waitForSelector(HTML_INPUT_EMAIL);
 
   await page.waitForSelector('asl-google-signin-button>div>iframe');
@@ -41,7 +41,7 @@ export async function edesur(browser) {
   await page.waitForNavigation({waitUntil: 'networkidle2'});
   await page.waitForSelector('h5.card-title');
 
-  console.log(`✅ ${SERVICIO}: Leyendo datos`)
+  console.log(`⌛ ${SERVICIO}: Leyendo datos`)
   await sleep(1000);
 
   // Leo los datos
@@ -55,6 +55,7 @@ export async function edesur(browser) {
   }, SERVICIO);
 
   await page.close();
+  console.log(`✅ ${SERVICIO}: FIN.`)
   return result
 };
 
