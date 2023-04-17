@@ -8,9 +8,9 @@ console.clear();
 dotenv.config();
 
 (async () => {
-  const browser = await puppeteer.launch({ headless: false, args: ['--start-maximized']});
+  const browser = await puppeteer.launch({ headless: true, args: ['--start-maximized']});
 
-  console.time('Temporizador');
+  console.time('🕙 Temporizador');
   Promise.all([
     edesur(browser),
     metrogas(browser),
@@ -18,7 +18,7 @@ dotenv.config();
   ]).then( r => {
     console.table(r);
     browser.close();
-    console.timeEnd('Temporizador');
+    console.timeEnd('🕙 Temporizador');
   })
 
 })();

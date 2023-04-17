@@ -25,7 +25,6 @@ export async function edesur(browser) {
   // await page.screenshot({ path: 'captura'+SERVICIO+'.png' });
 
   sleep(1000);
-  console.log('yendooooooooooooooooooooooooooooooooooooo')
   
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
