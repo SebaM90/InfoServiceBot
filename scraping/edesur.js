@@ -17,17 +17,19 @@ export async function edesur(browser) {
   console.log(`✅ ${SERVICIO}: Ingresando...`);
   await page.goto(URL_LOGIN, { waitUntil: 'networkidle2' });
 
-  await sleep(2000)
-
   console.log(`✅ ${SERVICIO}: Enviando credenciales y haciendo login`)
   await page.waitForSelector(HTML_INPUT_EMAIL);
 
-  await sleep(1500);
+  await page.waitForSelector('asl-google-signin-button>div>iframe');
+
+  // await page.screenshot({ path: 'captura'+SERVICIO+'.png' });
+
+  sleep(1000);
+  console.log('yendooooooooooooooooooooooooooooooooooooo')
   
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
-  await page.focus(HTML_INPUT_EMAIL);
   await page.type(HTML_INPUT_EMAIL, process.env.EDESUR_USER);
   await page.keyboard.press('Tab');
   await page.type(HTML_INPUT_PASSWORD, process.env.EDESUR_PASS);
@@ -44,14 +46,14 @@ export async function edesur(browser) {
   await sleep(1000);
 
   // Leo los datos
-  const result = await page.evaluate(() => {
-    let data = { servicio: '░░░░░▒▒▒▒▒▓▓▓▓▓ ⚡ EDESUR ⚡ ▓▓▓▓▓▒▒▒▒▒░░░░░'};
+  const result = await page.evaluate((a) => {
+    let data = { servicio: a };
     document.querySelectorAll('div.display-sm p').forEach( (el, index, lista) => {
         // if (index % 2 === 0) data.push({concepto: el.innerText, valor: lista[index+1]?.innerText});
         if (index % 2 === 0) data[el.innerText] = lista[index+1]?.innerText;
     });
     return data;
-  });
+  }, SERVICIO);
 
   await page.close();
   return result
