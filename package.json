@@ -1,0 +1,26 @@
+{
+  "name": "infoservicebot",
+  "version": "1.0.0",
+  "description": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SebaM90/InfoServiceBot.git"
+  },
+  "author": "SGMP",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SebaM90/InfoServiceBot/issues"
+  },
+  "homepage": "https://github.com/SebaM90/InfoServiceBot#readme",
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "node-fetch": "^3.3.1",
+    "puppeteer": "^19.9.0"
+  }
+}
