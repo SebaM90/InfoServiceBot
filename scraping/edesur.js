@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { sleep } from '../helpers.js';
+import { dineroToNumber, sleep } from '../helpers.js';
 console.clear();
 dotenv.config();
 

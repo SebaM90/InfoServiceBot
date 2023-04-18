@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { sleep } from '../helpers.js';
+import { dineroToNumber, sleep } from '../helpers.js';
 console.clear();
 dotenv.config();
 
@@ -46,6 +46,6 @@ export async function metrogas(browser) {
     servicio: SERVICIO,
     '1er Vencimiento': '',
     'TOTAL FACTURA': '',
-    'TOTAL A PAGAR': result?.replace('Deuda Total: ', '')
+    'TOTAL A PAGAR': dineroToNumber(result)
   }
 };

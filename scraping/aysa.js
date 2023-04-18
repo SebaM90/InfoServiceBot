@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { sleep } from '../helpers.js';
+import { dineroToNumber, sleep } from '../helpers.js';
 console.clear();
 dotenv.config();
 
@@ -22,7 +22,7 @@ export async function aysa(browser) {
 
   console.log(`⌛ ${SERVICIO}: Esperando formulario`)
   await page.waitForSelector(HTML_INPUT_EMAIL);
-  await sleep(3000)
+  await sleep(4000)
 
   await page.type(HTML_INPUT_EMAIL, process.env.AYSA_USER);
   await page.keyboard.press('Tab');
@@ -46,6 +46,6 @@ export async function aysa(browser) {
     servicio: SERVICIO,
     '1er Vencimiento': '',
     'TOTAL FACTURA': '',
-    'TOTAL A PAGAR': result?.replace('Su saldo es ', '')
+    'TOTAL A PAGAR': dineroToNumber(result)
   }
 };
