@@ -3,12 +3,12 @@ lockfileVersion: 5.4
 specifiers:
   dotenv: ^16.0.3
   node-fetch: ^3.3.1
-  puppeteer: ^19.9.0
+  puppeteer: ^19.9.1
 
 dependencies:
   dotenv: 16.0.3
   node-fetch: 3.3.1
-  puppeteer: 19.9.0
+  puppeteer: 19.9.1
 
 packages:
 
@@ -446,8 +446,8 @@ packages:
       once: 1.4.0
     dev: false
 
-  /puppeteer-core/19.9.0:
-    resolution: {integrity: sha512-IJYfCE0oFpi5dTvNFqOwo8Dey6zzx7hANy7z6K2bjpCux9oPOSOIubq40awNhaHlfi8soYtgU4qabnzMXB7xBQ==}
+  /puppeteer-core/19.9.1:
+    resolution: {integrity: sha512-46JGqhqTgYO5DuUMRGUiMCKM/86uHMsMCK7Fw7cbY/p+eCKLIPGVyQyI/E0UcGYa0+OH3dz0ResaDdHxqCgDDw==}
     engines: {node: '>=14.14.0'}
     peerDependencies:
       typescript: '>= 4.7.4'
@@ -473,8 +473,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /puppeteer/19.9.0:
-    resolution: {integrity: sha512-JDx8WwGlkdQYTaa3OMYDF+uFWimiwNnacg5FGEC5J6+VxDsLK30wHKU/Db2LqEhtAoIu4RwS+BRH4zRPlCsFpA==}
+  /puppeteer/19.9.1:
+    resolution: {integrity: sha512-Ii8yZySNdpPzeKAK6ROFQ+gAi04igoZ0cPsBE1LW9fmzkqQTqbJpEGhJ/5gBS8oVqkQ2CNFA4BskJl75zaWWgA==}
     requiresBuild: true
     dependencies:
       '@puppeteer/browsers': 0.4.1
@@ -482,7 +482,7 @@ packages:
       https-proxy-agent: 5.0.1
       progress: 2.0.3
       proxy-from-env: 1.1.0
-      puppeteer-core: 19.9.0
+      puppeteer-core: 19.9.1
     transitivePeerDependencies:
       - bufferutil
       - encoding
