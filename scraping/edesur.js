@@ -14,10 +14,10 @@ export async function edesur(browser) {
   await page.setDefaultTimeout(60000);
   await page.setDefaultNavigationTimeout(60000);
   
-  console.log(`⌛ ${SERVICIO}: Ingresando...`);
+  console.log(`❔ ${SERVICIO}: Ingresando...`);
   await page.goto(URL_LOGIN, { waitUntil: 'networkidle2' });
 
-  console.log(`⌛ ${SERVICIO}: Enviando credenciales y haciendo login`)
+  console.log(`❔ ${SERVICIO}: Enviando credenciales y haciendo login`)
   await page.waitForSelector(HTML_INPUT_EMAIL);
 
   await page.waitForSelector('asl-google-signin-button>div>iframe');
@@ -41,13 +41,14 @@ export async function edesur(browser) {
   await page.waitForNavigation({waitUntil: 'networkidle2'});
   await page.waitForSelector('h5.card-title');
 
-  console.log(`⌛ ${SERVICIO}: Leyendo datos`)
+  console.log(`❔ ${SERVICIO}: Leyendo datos`)
   await sleep(1000);
 
   // Leo los datos
   const result = await page.evaluate((a) => {
-    let data = { servicio: a };
+    let data = {};
     document.querySelectorAll('div.display-sm p').forEach( (el, index, lista) => {
+        // 1er Vencimiento, TOTAL FACTURA, TOTAL A PAGAR
         // if (index % 2 === 0) data.push({concepto: el.innerText, valor: lista[index+1]?.innerText});
         if (index % 2 === 0) data[el.innerText] = lista[index+1]?.innerText;
     });
@@ -56,7 +57,16 @@ export async function edesur(browser) {
 
   await page.close();
   console.log(`✅ ${SERVICIO}: FIN.`)
-  return result
+  return {
+    servicio: SERVICIO,
+    facturas: [{
+      periodo: '',
+      monto: dineroToNumber(result['TOTAL FACTURA']),
+      total: dineroToNumber(result['TOTAL FACTURA']),
+      vencimiento: result['1er Vencimiento'] ?? result['2do Vencimiento']
+    }],
+    total: dineroToNumber(result['TOTAL A PAGAR'])
+  }
 };
 
 

@@ -14,13 +14,13 @@ export async function aysa(browser) {
   await page.setDefaultTimeout(60000);
   await page.setDefaultNavigationTimeout(60000);
   
-  console.log(`⌛ ${SERVICIO}: Ingresando...`);
+  console.log(`❔ ${SERVICIO}: Ingresando...`);
   await page.goto(URL_LOGIN, { waitUntil: 'networkidle2' });
 
-  console.log(`⌛ ${SERVICIO}: Esperando redirecciones`)
+  console.log(`❔ ${SERVICIO}: Esperando redirecciones`)
   await page.waitForNavigation();
 
-  console.log(`⌛ ${SERVICIO}: Esperando formulario`)
+  console.log(`❔ ${SERVICIO}: Esperando formulario`)
   await page.waitForSelector(HTML_INPUT_EMAIL);
   await sleep(4000)
 
@@ -35,17 +35,39 @@ export async function aysa(browser) {
   await page.waitForNavigation({waitUntil: 'networkidle2'});
   await page.waitForSelector('span.textDeuda');
 
-  console.log(`⌛ ${SERVICIO}: Leyendo datos`)
+  console.log(`❔ ${SERVICIO}: Leyendo datos`)
   const result = await page.$eval('span.textDeuda', span => span.innerText); // Su saldo es $ 7.997,67
 
+  const facturas = await page.evaluate( () => {
+    const filas = document.querySelectorAll('tbody > tr')
+    const rows = [];
+    filas.forEach(row => {
+      const cells = row.querySelectorAll('td.sapMListTblCell');
+      // DESCRIPCIÓN          VENCIMIENTO   IMP. ORIGINAL   IMP. ACTUALIZADO
+      // Facturación General	25/04/2023	  $ 8.720,47	    $ 8.720,47
+      // Remesas de Pagos	    06/02/2023	  $ 722,80        $ 722,80
+      const isRemesas = cells[0].innerText?.toLowerCase().trim().includes('remesas') ?? false; // Guita a favor
+      const obj = {
+        periodo: '',
+        monto: cells[2]?.innerText.trim(),
+        total: cells[3]?.innerText.trim(),
+        vencimiento: cells[1]?.innerText.trim(),
+      };
+      if (isRemesas) {
+        obj.monto = obj.monto.replace('$ ', '$-');
+        obj.total = obj.total.replace('$ ', '$-');
+      }
+      rows.push(obj);
+    })
+    return rows;
+  })
 
   // await sleep(1000);
   await page.close();
   console.log(`✅ ${SERVICIO}: FIN.`)
   return {
     servicio: SERVICIO,
-    '1er Vencimiento': '',
-    'TOTAL FACTURA': '',
-    'TOTAL A PAGAR': dineroToNumber(result)
+    facturas: facturas.map( f => { f.monto = dineroToNumber(f.monto); f.total = dineroToNumber(f.total); return f }),
+    total: dineroToNumber(result)
   }
 };

@@ -14,13 +14,13 @@ export async function metrogas(browser) {
   await page.setDefaultTimeout(60000);
   await page.setDefaultNavigationTimeout(60000);
   
-  console.log(`⌛ ${SERVICIO}: Ingresando...`);
+  console.log(`❔ ${SERVICIO}: Ingresando...`);
   await page.goto(URL_LOGIN, { waitUntil: 'networkidle2' });
 
-  console.log(`⌛ ${SERVICIO}: Esperando redirecciones`)
+  console.log(`❔ ${SERVICIO}: Esperando redirecciones`)
   await page.waitForNavigation();
 
-  console.log(`⌛ ${SERVICIO}: Esperando formulario`)
+  console.log(`❔ ${SERVICIO}: Esperando formulario`)
   await page.waitForSelector(HTML_INPUT_EMAIL);
   await sleep(2000)
 
@@ -35,17 +35,34 @@ export async function metrogas(browser) {
   await page.waitForNavigation({waitUntil: 'networkidle2'});
   await page.waitForSelector('.sapMObjectNumberText');
 
-  console.log(`⌛ ${SERVICIO}: Leyendo datos`)
+  console.log(`❔ ${SERVICIO}: Leyendo datos`)
   const result = await page.$eval('.sapMObjectNumberText', span => span.innerText); // Deuda Total: $ 3.265,18
 
+  await sleep(500);
+
+  const facturas = await page.evaluate( () => {
+    const filas = document.querySelectorAll('tbody > tr')
+    const rows = [];
+    filas.forEach(row => {
+      const cells = row.querySelectorAll('td');
+      const obj = {
+        // facturaDeCiclo: cells[0].innerText.trim(),
+        periodo: cells[1]?.innerText.trim(),
+        monto: cells[2]?.innerText.trim(),
+        total: cells[3].querySelector('.sapMObjStatusText')?.innerText.trim(),
+        vencimiento: cells[4].querySelector('.sapMText')?.innerText.trim(),
+      };
+      rows.push(obj);
+    })
+    return rows;
+  })
 
   // await sleep(1000);
   await page.close();
   console.log(`✅ ${SERVICIO}: FIN.`)
   return {
     servicio: SERVICIO,
-    '1er Vencimiento': '',
-    'TOTAL FACTURA': '',
-    'TOTAL A PAGAR': dineroToNumber(result)
+    facturas: facturas.map( f => { f.monto = dineroToNumber(f.monto); f.total = dineroToNumber(f.total); return f }),
+    total: dineroToNumber(result)
   }
 };
