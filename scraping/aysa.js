@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { dineroToNumber, sleep } from '../helpers.js';
+import { dineroToNumber, saveScreenshot, sleep } from '../helpers.js';
 console.clear();
 dotenv.config();
 
@@ -13,30 +13,40 @@ export async function aysa(browser) {
 
   await page.setDefaultTimeout(60000);
   await page.setDefaultNavigationTimeout(60000);
+
   
-  console.log(`❔ ${SERVICIO}: Ingresando...`);
-  await page.goto(URL_LOGIN, { waitUntil: 'networkidle2' });
+  console.log(`❔ Ingresando a ${SERVICIO}`);
+  await page.goto(URL_LOGIN, { waitUntil: 'networkidle0' });
 
-  console.log(`❔ ${SERVICIO}: Esperando redirecciones`)
-  await page.waitForNavigation();
+  console.log(`❔ Esperando redirecciones: ${SERVICIO}`)
 
-  console.log(`❔ ${SERVICIO}: Esperando formulario`)
+  await saveScreenshot(page, SERVICIO, 0)
+
+  console.log(`❔ Esperando formulario: ${SERVICIO}`)
   await page.waitForSelector(HTML_INPUT_EMAIL);
   await sleep(4000)
+
 
   await page.type(HTML_INPUT_EMAIL, process.env.AYSA_USER);
   await page.keyboard.press('Tab');
   await page.type(HTML_INPUT_PASSWORD, process.env.AYSA_PASS);
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
-  await page.keyboard.press('Enter');
+
+  await saveScreenshot(page, SERVICIO, 1)
+
+  await Promise.all([
+    page.waitForNavigation(), // The promise resolves after navigation has finished
+    page.keyboard.press('Enter')
+  ]);
 
   // Espero que cargue la factura y deuda
-  await page.waitForNavigation({waitUntil: 'networkidle2'});
   await page.waitForSelector('span.textDeuda');
 
-  console.log(`❔ ${SERVICIO}: Leyendo datos`)
+  console.log(`❔ Leyendo datos: ${SERVICIO}`)
   const result = await page.$eval('span.textDeuda', span => span.innerText); // Su saldo es $ 7.997,67
+
+  await saveScreenshot(page, SERVICIO, 2)
 
   const facturas = await page.evaluate( () => {
     const filas = document.querySelectorAll('tbody > tr')
@@ -48,7 +58,7 @@ export async function aysa(browser) {
       // Remesas de Pagos	    06/02/2023	  $ 722,80        $ 722,80
       const isRemesas = cells[0].innerText?.toLowerCase().trim().includes('remesas') ?? false; // Guita a favor
       const obj = {
-        periodo: '',
+        periodo: '------',
         monto: cells[2]?.innerText.trim(),
         total: cells[3]?.innerText.trim(),
         vencimiento: cells[1]?.innerText.trim(),
@@ -62,12 +72,11 @@ export async function aysa(browser) {
     return rows;
   })
 
-  // await sleep(1000);
-  await page.close();
-  console.log(`✅ ${SERVICIO}: FIN.`)
+  // await page.close();
+  console.log(`✅ FINALIZADO: ${SERVICIO}`)
   return {
     servicio: SERVICIO,
-    facturas: facturas.map( f => { f.monto = dineroToNumber(f.monto); f.total = dineroToNumber(f.total); return f }),
+    facturas: facturas,
     total: dineroToNumber(result)
   }
 };

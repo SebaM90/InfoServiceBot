@@ -1,5 +1,5 @@
 import dotenv from 'dotenv';
-import { dineroToNumber, sleep } from '../helpers.js';
+import { dineroToNumber, saveScreenshot, sleep } from '../helpers.js';
 console.clear();
 dotenv.config();
 
@@ -14,15 +14,15 @@ export async function edesur(browser) {
   await page.setDefaultTimeout(60000);
   await page.setDefaultNavigationTimeout(60000);
   
-  console.log(`❔ ${SERVICIO}: Ingresando...`);
-  await page.goto(URL_LOGIN, { waitUntil: 'networkidle2' });
+  console.log(`❔ Ingresando a ${SERVICIO}`);
+  await page.goto(URL_LOGIN, { waitUntil: 'networkidle0' })
 
-  console.log(`❔ ${SERVICIO}: Enviando credenciales y haciendo login`)
+  await saveScreenshot(page, SERVICIO, 0)
+
+  console.log(`❔ Enviando credenciales y haciendo login: ${SERVICIO}`)
   await page.waitForSelector(HTML_INPUT_EMAIL);
 
   await page.waitForSelector('asl-google-signin-button>div>iframe');
-
-  // await page.screenshot({ path: 'captura'+SERVICIO+'.png' });
 
   sleep(1000);
   
@@ -35,14 +35,21 @@ export async function edesur(browser) {
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
-  await page.keyboard.press('Enter');
+
+  await saveScreenshot(page, SERVICIO, 1)
+  await Promise.all([
+    page.waitForNavigation(), // The promise resolves after navigation has finished
+    page.keyboard.press('Enter')
+  ]);
 
   // Espero que cargue la factura y deuda
-  await page.waitForNavigation({waitUntil: 'networkidle2'});
   await page.waitForSelector('h5.card-title');
 
-  console.log(`❔ ${SERVICIO}: Leyendo datos`)
+  console.log(`❔ Leyendo datos: ${SERVICIO}`)
+
   await sleep(1000);
+
+  await saveScreenshot(page, SERVICIO, 2)
 
   // Leo los datos
   const result = await page.evaluate((a) => {
@@ -55,14 +62,15 @@ export async function edesur(browser) {
     return data;
   }, SERVICIO);
 
-  await page.close();
-  console.log(`✅ ${SERVICIO}: FIN.`)
+
+  // await page.close();
+  console.log(`✅ FINALIZADO: ${SERVICIO}`)
   return {
     servicio: SERVICIO,
     facturas: [{
-      periodo: '',
-      monto: dineroToNumber(result['TOTAL FACTURA']),
-      total: dineroToNumber(result['TOTAL FACTURA']),
+      periodo: '------',
+      monto: result['TOTAL FACTURA'],
+      total: result['TOTAL FACTURA'],
       vencimiento: result['1er Vencimiento'] ?? result['2do Vencimiento']
     }],
     total: dineroToNumber(result['TOTAL A PAGAR'])
