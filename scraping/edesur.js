@@ -14,12 +14,12 @@ export async function edesur(browser) {
   await page.setDefaultTimeout(60000);
   await page.setDefaultNavigationTimeout(60000);
   
-  console.log(`❔ Ingresando a ${SERVICIO}`);
+  console.log(`✔ Ingresando a ${SERVICIO}`);
   await page.goto(URL_LOGIN, { waitUntil: 'networkidle0' })
 
   await saveScreenshot(page, SERVICIO, 0)
 
-  console.log(`❔ Enviando credenciales y haciendo login: ${SERVICIO}`)
+  console.log(`✔ Enviando credenciales y haciendo login: ${SERVICIO}`)
   await page.waitForSelector(HTML_INPUT_EMAIL);
 
   await page.waitForSelector('asl-google-signin-button>div>iframe');
@@ -45,7 +45,7 @@ export async function edesur(browser) {
   // Espero que cargue la factura y deuda
   await page.waitForSelector('h5.card-title');
 
-  console.log(`❔ Leyendo datos: ${SERVICIO}`)
+  console.log(`✔ Leyendo datos: ${SERVICIO}`)
 
   await sleep(1000);
 

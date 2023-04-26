@@ -24,14 +24,17 @@ dotenv.config();
     const servicios = promesas.filter( p => p.status === 'fulfilled' )?.map( p => p.value );
     const errores = promesas.filter( p => p.status === 'rejected' )?.map( p => p.reason );
 
-    console.log('\n' + '•'.repeat(80))
+    console.log('\n' + '•'.repeat(70))
     const total = servicios?.reduce( (acc, cur) => acc + (cur?.total ?? 0), 0);
     console.log(
-                '⌛ Se tardó:', ((performance.now()-timeStart)/1000).toFixed(1) + ' s' +
-                '\t' + '❌ Problemas:', (errores.length ?? 0),
-                '\t' + getTextoDeuda(total), numeroToDinero(total)
+                '➰ HORA:', (new Date()).toLocaleTimeString(), '\t\t' +
+                '⌛ TIEMPO:', ((performance.now()-timeStart)/1000).toFixed(1) + ' s'
                 );
-    console.log('•'.repeat(80), '\n')
+    console.log(
+                '❌ PROBLEMAS:', (errores.length ?? 0), '\t\t' +
+                getTextoDeuda(total) + ':' , numeroToDinero(total)
+                );
+    console.log('•'.repeat(70), '\n')
     servicios.forEach( s => {
       console.log( '⭐', s.servicio, '⭐', '\t' + getTextoDeuda(s.total) + ':', numeroToDinero(s.total) )
       const facturas = s?.facturas?.map( f => {

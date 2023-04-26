@@ -15,14 +15,14 @@ export async function aysa(browser) {
   await page.setDefaultNavigationTimeout(60000);
 
   
-  console.log(`❔ Ingresando a ${SERVICIO}`);
+  console.log(`✔ Ingresando a ${SERVICIO}`);
   await page.goto(URL_LOGIN, { waitUntil: 'networkidle0' });
 
-  console.log(`❔ Esperando redirecciones: ${SERVICIO}`)
+  console.log(`✔ Esperando redirecciones: ${SERVICIO}`)
 
   await saveScreenshot(page, SERVICIO, 0)
 
-  console.log(`❔ Esperando formulario: ${SERVICIO}`)
+  console.log(`✔ Esperando formulario: ${SERVICIO}`)
   await page.waitForSelector(HTML_INPUT_EMAIL);
   await sleep(4000)
 
@@ -43,7 +43,7 @@ export async function aysa(browser) {
   // Espero que cargue la factura y deuda
   await page.waitForSelector('span.textDeuda');
 
-  console.log(`❔ Leyendo datos: ${SERVICIO}`)
+  console.log(`✔ Leyendo datos: ${SERVICIO}`)
   const result = await page.$eval('span.textDeuda', span => span.innerText); // Su saldo es $ 7.997,67
 
   await saveScreenshot(page, SERVICIO, 2)

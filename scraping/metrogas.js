@@ -14,17 +14,16 @@ export async function metrogas(browser) {
   await page.setDefaultTimeout(60000);
   await page.setDefaultNavigationTimeout(60000);
 
-  
-  console.log(`❔ Ingresando a ${SERVICIO}`);
+  console.log(`✔ Ingresando a ${SERVICIO}`);
   
   await page.goto(URL_LOGIN, { waitUntil: 'networkidle0' })
 
 
-  console.log(`❔ Esperando redirecciones: ${SERVICIO}`)
+  console.log(`✔ Esperando redirecciones: ${SERVICIO}`)
 
   await saveScreenshot(page, SERVICIO, 0)
 
-  console.log(`❔ Esperando formulario: ${SERVICIO}`)
+  console.log(`✔ Esperando formulario: ${SERVICIO}`)
   await page.waitForSelector(HTML_INPUT_EMAIL);
   await sleep(2000)
 
@@ -43,7 +42,7 @@ export async function metrogas(browser) {
   // Espero que cargue la factura y deuda
   await page.waitForSelector('.sapMObjectNumberText');
 
-  console.log(`❔ Leyendo datos: ${SERVICIO}`)
+  console.log(`✔ Leyendo datos: ${SERVICIO}`)
   await sleep(500);
   const result = await page.$eval('.sapMObjectNumberText', span => span.innerText?.trim()?.toUpperCase() ); // Deuda Total: $ 3.265,18 ó "No registra deuda"
 

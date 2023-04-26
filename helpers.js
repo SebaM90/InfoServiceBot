@@ -41,7 +41,7 @@ export async function deleteCapturas() {
       if (file.startsWith('captura') && file.endsWith('.png')) {
         fs.unlink(`${file}`, (err) => {
           if (err) throw err;
-          console.log(`❎ "${file}" eliminado.`);
+          console.log(`⚪ "${file}" eliminado.`);
         });
       }
     });
