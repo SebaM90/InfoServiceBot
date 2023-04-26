@@ -34,4 +34,5 @@ npm start
 
 ## Output *(Terminal usada: [Hyper](https://hyper.is))*
 
-![image](https://user-images.githubusercontent.com/39964514/233237736-d5df7d77-9ec6-4b22-8def-05fb83ebc5d1.png)
+![image](https://user-images.githubusercontent.com/39964514/234643057-d88fa102-f44a-4faf-b505-46f2d4648e6c.png)
+
