@@ -10,7 +10,7 @@ dotenv.config();
 
 
 (async () => {
-  console.time('\t' + '⌛ Temporizador');
+  const timeStart = performance.now();
   const browser = await puppeteer.launch({ headless: true, args: ['--start-maximized'], defaultViewport: { width: 1200, height: 1000 }});
 
   await deleteCapturas();
@@ -24,12 +24,14 @@ dotenv.config();
     const servicios = promesas.filter( p => p.status === 'fulfilled' )?.map( p => p.value );
     const errores = promesas.filter( p => p.status === 'rejected' )?.map( p => p.reason );
 
-    console.log('\n' + '•'.repeat(60))
-    console.timeEnd('\t' + '⌛ Temporizador');
+    console.log('\n' + '•'.repeat(80))
     const total = servicios?.reduce( (acc, cur) => acc + (cur?.total ?? 0), 0);
-    console.log('\t' + '❌ Problemas:', errores.length ?? 0)
-    console.log('\t' + getTextoDeuda(total), numeroToDinero(total))
-    console.log('•'.repeat(60), '\n')
+    console.log(
+                '⌛ Se tardó:', ((performance.now()-timeStart)/1000).toFixed(1) + ' s' +
+                '\t' + '❌ Problemas:', (errores.length ?? 0),
+                '\t' + getTextoDeuda(total), numeroToDinero(total)
+                );
+    console.log('•'.repeat(80), '\n')
     servicios.forEach( s => {
       console.log( '⭐', s.servicio, '⭐', '\t' + getTextoDeuda(s.total) + ':', numeroToDinero(s.total) )
       const facturas = s?.facturas?.map( f => {
