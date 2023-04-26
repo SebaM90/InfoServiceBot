@@ -44,7 +44,8 @@ export async function metrogas(browser) {
   await page.waitForSelector('.sapMObjectNumberText');
 
   console.log(`❔ Leyendo datos: ${SERVICIO}`)
-  const result = await page.$eval('.sapMObjectNumberText', span => span.innerText); // Deuda Total: $ 3.265,18
+  await sleep(500);
+  const result = await page.$eval('.sapMObjectNumberText', span => span.innerText?.trim()?.toUpperCase() ); // Deuda Total: $ 3.265,18 ó "No registra deuda"
 
   await sleep(1000);
 
@@ -73,6 +74,6 @@ export async function metrogas(browser) {
   return {
     servicio: SERVICIO,
     facturas: facturas,
-    total: dineroToNumber(result)
+    total: (result && result === 'NO REGISTRA DEUDA') ? 0 : dineroToNumber(result)
   }
 };

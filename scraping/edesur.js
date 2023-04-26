@@ -58,10 +58,17 @@ export async function edesur(browser) {
         // 1er Vencimiento, TOTAL FACTURA, TOTAL A PAGAR
         // if (index % 2 === 0) data.push({concepto: el.innerText, valor: lista[index+1]?.innerText});
         if (index % 2 === 0) data[el.innerText] = lista[index+1]?.innerText;
+        console.log(index, el.innerText)
     });
+
+    const isSinDeuda = Array.from(document.querySelectorAll('h5 + div.acciones-estado-cuenta span'))
+                                ?.map( e => e.innerText?.trim()?.toUpperCase() )
+                                ?.includes('SU CUENTA NO POSEE DEUDA') ?? false // "Al día de la fecha, su cuenta no posee deuda.""
+
+    if ( !data['TOTAL A PAGAR'] || isSinDeuda ) data['TOTAL A PAGAR'] = '$ 0';
+
     return data;
   }, SERVICIO);
-
 
   // await page.close();
   console.log(`✅ FINALIZADO: ${SERVICIO}`)
