@@ -8,15 +8,32 @@ export async function sleep(ms = 0) {
 
 
 // Convierte dinero string en numero: 'Deuda Total $ 7.994,98' → '7994.98'
-// Si no encuentra nada, devuelve '---'
+/**
+ * Convierte un string con formato símil moneda a un número.
+ *
+ * @param {string} monto - El string con formato de moneda a convertir.
+ * @returns {number|string} El número convertido o un mensaje de error si no se pudo realizar la conversión.
+ * @example
+ * dineroToNumber("$123.456,78") // Retorna: 123456.78
+ * dineroToNumber("$ - 123.456,78") // Retorna: -123456.78
+ * dineroToNumber("123,456.78") // Retorna: 123
+ * dineroToNumber("123.456.78") // Retorna: 12345678
+ * dineroToNumber("Saldo Positivo-$123,45") // Retorna: -123.45
+ * dineroToNumber("Estas al día") // Retorna: "❌ Error al convertir"
+ */
 export function dineroToNumber(monto) {
-  const regex = /-?[\d.,]+/g;
-  if (!monto || typeof monto !== 'string') return '❌E1'
-  const match = monto?.match(regex) ?? null;
-  if ( !Array.isArray(match) ) return '❌E2';
-  const limpio = match[0]?.replace('.', '').replace(',', '.'); // '-111.555,9' ---> '111555.9'
-  const numero = match ? parseFloat(limpio) : '❌E3';
-  return numero
+  try {
+    const sinTextoPrevio = monto.replace(/^.+?(\$|-)/, '$1'); // Eliminar el texto antes del símbolo "$" o "-".
+    const sinSimboloDolar = sinTextoPrevio.replace(/\$/g, ''); // Eliminar el símbolo de dólar.
+    const sinEspacios = sinSimboloDolar.replace(/\s+/g, ''); // Eliminar los espacios en blanco.
+    const sinPuntos = sinEspacios.replace(/\./g, ''); // Eliminar los puntos que separan los miles.
+    const conPuntoDecimal = sinPuntos.replace(/,(\d{2})$/, '.$1'); // Reemplazar la coma decimal por un punto decimal.
+    const numero = parseFloat(conPuntoDecimal); // Convertir el string resultante a un número.
+    if (isNaN(numero)) throw new Error(); // Verificar si la conversión tuvo éxito.
+    return numero;
+  } catch (error) {
+    return `❌ Error al convertir "${monto}" a número.`;
+  }
 }
 
 // Convierte un numero a dinero argentino: 1234.5 → '$ 1.234,5'

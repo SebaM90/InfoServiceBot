@@ -31,7 +31,7 @@ dotenv.config();
                 '⌛ TIEMPO:', ((performance.now()-timeStart)/1000).toFixed(1) + ' s'
                 );
     console.log(
-                '❌ PROBLEMAS:', (errores.length ?? 0), '\t\t' +
+                '⛔ PROBLEMAS:', (errores.length ?? 0), '\t\t' +
                 getTextoDeuda(total) + ':' , numeroToDinero(total)
                 );
     console.log('•'.repeat(70), '\n')
@@ -49,7 +49,7 @@ dotenv.config();
     // Errores
     if (errores && errores.length) {
       console.log('•'.repeat(60))
-      console.log('❌ ERRORES:')
+      console.log('⛔ PROBLEMAS:')
       errores.forEach( p => console.log('\n', p) )
     }
   })
@@ -57,5 +57,10 @@ dotenv.config();
 })();
 
 function getTextoDeuda(numero) {
-  return ( numero !== null && (typeof numero === 'number') && numero <= 0) ? '✅ SIN ADEUDAR' : '⭕ DEUDA TOTAL'
+  if ( numero === null ) '⭕ DEUDA TOTAL';
+  if (typeof numero === 'number') {
+    if ( numero < 0 ) return '✅ SALDO A FAVOR'
+    if ( numero === 0 ) return '⏺  SIN ADEUDAR'
+  }
+  return '⭕ DEUDA TOTAL';
 }
