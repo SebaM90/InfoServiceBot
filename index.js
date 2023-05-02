@@ -11,7 +11,11 @@ dotenv.config();
 
 (async () => {
   const timeStart = performance.now();
-  const browser = await puppeteer.launch({ headless: true, args: ['--start-maximized'], defaultViewport: { width: 1200, height: 1000 }});
+  const browser = await puppeteer.launch({
+    headless: 'new',
+    args: ['--start-maximized'],
+    defaultViewpor: { width: 1200, height: 1000 }
+  });
 
   await deleteCapturas();
 

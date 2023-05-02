@@ -58,7 +58,6 @@ export async function edesur(browser) {
         // 1er Vencimiento, TOTAL FACTURA, TOTAL A PAGAR
         // if (index % 2 === 0) data.push({concepto: el.innerText, valor: lista[index+1]?.innerText});
         if (index % 2 === 0) data[el.innerText] = lista[index+1]?.innerText;
-        console.log(index, el.innerText)
     });
 
     const isSinDeuda = Array.from(document.querySelectorAll('h5 + div.acciones-estado-cuenta span'))
