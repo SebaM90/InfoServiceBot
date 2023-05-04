@@ -4,13 +4,13 @@ specifiers:
   date-fns: ^2.30.0
   dotenv: ^16.0.3
   node-fetch: ^3.3.1
-  puppeteer: ^20.0.0
+  puppeteer: ^20.1.0
 
 dependencies:
   date-fns: 2.30.0
   dotenv: 16.0.3
   node-fetch: 3.3.1
-  puppeteer: 20.0.0
+  puppeteer: 20.1.0
 
 packages:
 
@@ -150,12 +150,12 @@ packages:
     resolution: {integrity: sha512-jJ0bqzaylmJtVnNgzTeSOs8DPavpbYgEr/b0YL8/2GO3xJEhInFmhKMUnEJQjZumK7KXGFhUy89PrsJWlakBVg==}
     dev: false
 
-  /chromium-bidi/0.4.7_7yd6ibrwer4fxzjxd6md3toxiy:
+  /chromium-bidi/0.4.7_5222unh4tkeylqma7dhccidrk4:
     resolution: {integrity: sha512-6+mJuFXwTMU6I3vYLs6IL8A1DyQTPjCfIL971X0aMPVGRbGnNfl6i6Cl0NMbxi2bRYLGESt9T2ZIMRM5PAEcIQ==}
     peerDependencies:
       devtools-protocol: '*'
     dependencies:
-      devtools-protocol: 0.0.1107588
+      devtools-protocol: 0.0.1120988
       mitt: 3.0.0
     dev: false
 
@@ -231,8 +231,8 @@ packages:
       ms: 2.1.2
     dev: false
 
-  /devtools-protocol/0.0.1107588:
-    resolution: {integrity: sha512-yIR+pG9x65Xko7bErCUSQaDLrO/P1p3JUzEk7JCU4DowPcGHkTGUGQapcfcLc4qj0UaALwZ+cr0riFgiqpixcg==}
+  /devtools-protocol/0.0.1120988:
+    resolution: {integrity: sha512-39fCpE3Z78IaIPChJsP6Lhmkbf4dWXOmzLk/KFTdRkNk/0JymRIfUynDVRndV9HoDz8PyalK1UH21ST/ivwW5Q==}
     dev: false
 
   /dotenv/16.0.3:
@@ -462,8 +462,8 @@ packages:
       once: 1.4.0
     dev: false
 
-  /puppeteer-core/20.0.0:
-    resolution: {integrity: sha512-mQg1pXOqomTB0ecuv6WWrd+PxSeV4uC+wiUM+UYvENuKNq9m0fG9ZXhHLK1COwZH/A5IILzJH2sfQ0ivmxobGw==}
+  /puppeteer-core/20.1.0:
+    resolution: {integrity: sha512-/xTvabzAN4mnnuYkJCuWNnnEhOb3JrBTa3sY6qVi1wybuIEk5ODRg8Z5PPiKUGiKC9iG7GWOJ5CjF3iuMuxZSA==}
     engines: {node: '>=16.0.0'}
     peerDependencies:
       typescript: '>= 4.7.4'
@@ -472,10 +472,10 @@ packages:
         optional: true
     dependencies:
       '@puppeteer/browsers': 1.0.0
-      chromium-bidi: 0.4.7_7yd6ibrwer4fxzjxd6md3toxiy
+      chromium-bidi: 0.4.7_5222unh4tkeylqma7dhccidrk4
       cross-fetch: 3.1.5
       debug: 4.3.4
-      devtools-protocol: 0.0.1107588
+      devtools-protocol: 0.0.1120988
       extract-zip: 2.0.1
       https-proxy-agent: 5.0.1
       proxy-from-env: 1.1.0
@@ -489,8 +489,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /puppeteer/20.0.0:
-    resolution: {integrity: sha512-oVqHsbZFbZzEkRoNR2dZKhUG5fHAQ+vWTRLJ6vrKY5+amsz3bRF3BCTqidbDa6TG+bZ5Y4P+FVv6SUNzxsTvLA==}
+  /puppeteer/20.1.0:
+    resolution: {integrity: sha512-kZp1eYScK1IpHxkgnDaFSGKKCzt27iZfsxO6Xlv/cklzYrhobxTK9/PxzCacPCrYnxNQwKwHzHLPOCuSyjw1jg==}
     requiresBuild: true
     dependencies:
       '@puppeteer/browsers': 1.0.0
@@ -498,7 +498,7 @@ packages:
       https-proxy-agent: 5.0.1
       progress: 2.0.3
       proxy-from-env: 1.1.0
-      puppeteer-core: 20.0.0
+      puppeteer-core: 20.1.0
     transitivePeerDependencies:
       - bufferutil
       - encoding
