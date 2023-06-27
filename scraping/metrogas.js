@@ -4,7 +4,7 @@ console.clear();
 dotenv.config();
 
 const SERVICIO = 'METROGAS';
-const URL_LOGIN = 'https://portal.micuenta.metrogas.com.ar/sites#Consumos-App&/facturas/' + process.env.METROGAS_CTA_CONTRATO;
+const URL_LOGIN = 'https://portal.micuenta.metrogas.com.ar/sites#ConsumosSaldos-Detalle';
 const HTML_INPUT_EMAIL = '#j_username';
 const HTML_INPUT_PASSWORD = '#j_password';
 
@@ -40,27 +40,32 @@ export async function metrogas(browser) {
   ]);
 
   // Espero que cargue la factura y deuda
-  await page.waitForSelector('.sapMObjectNumberText');
+  await page.waitForSelector('#__status7-text');
 
   console.log(`✔ Leyendo datos: ${SERVICIO}`)
   await sleep(500);
-  const result = await page.$eval('.sapMObjectNumberText', span => span.innerText?.trim()?.toUpperCase() ); // Deuda Total: $ 3.265,18 ó "No registra deuda"
+  const result = await page.$eval('#__status7-text', span => span.innerText?.trim()?.toUpperCase() ); // Deuda Total: $ 3.265,18 ó "No registra deuda"
+
+
+  await saveScreenshot(page, SERVICIO, 2)
+  // Click en Boton de "Facturas Impagass"
+  await page.waitForSelector('#application-ConsumosSaldos-Detalle-component---Main--tab1Id');
+  await page.click('#application-ConsumosSaldos-Detalle-component---Main--tab1Id');
 
   await sleep(1000);
 
-  await saveScreenshot(page, SERVICIO, 2)
+  await saveScreenshot(page, SERVICIO, 3)
 
   const facturas = await page.evaluate( () => {
-    const filas = document.querySelectorAll('table#__xmlview0--idTableDebts-listUl > tbody > tr')
+    const filas = document.querySelectorAll('#application-ConsumosSaldos-Detalle-component---Main--idTableDebts-tblBody > tr');
     const rows = [];
     filas.forEach(row => {
       const cells = row.querySelectorAll('td');
       const obj = {
-        // facturaDeCiclo: cells[0].innerText.trim(),
-        periodo: cells[1]?.innerText.trim(),
-        monto: cells[2]?.innerText.trim(),
-        total: cells[3].querySelector('.sapMObjStatusText')?.innerText.trim(),
-        vencimiento: cells[4].querySelector('.sapMText')?.innerText.trim(),
+        periodo: cells[2]?.innerText.trim(),
+        monto: cells[3]?.innerText.trim(),
+        total: cells[4].querySelector('.sapMObjStatusText')?.innerText.trim(),
+        vencimiento: cells[5].querySelector('.sapMText')?.innerText.trim(),
       };
       rows.push(obj);
     })
