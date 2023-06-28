@@ -1,6 +1,8 @@
-import fs from 'fs';
-import { parse, formatDistance } from 'date-fns';
+import { formatDistance, parse } from 'date-fns';
 import es from 'date-fns/locale/es/index.js';
+import fs from 'fs';
+import https from 'https';
+
 
 export async function sleep(ms = 0) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -44,8 +46,14 @@ export function numeroToDinero(numero) {
 
 export async function saveScreenshot(page = null, servicio = '', detalle = '') {
   const ruta = `captura${servicio.toUpperCase()}_${detalle}.png`;
-  return page ? await page.screenshot({path: ruta, fullPage: false, type: 'png'})
-              : false;
+  try {
+    if (page) {
+      return await page.screenshot({path: ruta, fullPage: false, type: 'png'});
+    }
+  } catch (error) {
+    console.error(`❌ Screenshot: ${error}`);
+  }
+  return false;
 }
 
 
@@ -71,4 +79,24 @@ export function diasHastaHoy(fechaTexto) {
   const fechaEntradaObjeto = parse(fechaTexto, 'dd/MM/yyyy', new Date());
   const distanciaEnDias = formatDistance(fechaEntradaObjeto, fechaActual, { addSuffix: true, locale: es });
   return distanciaEnDias.charAt(0).toUpperCase() + distanciaEnDias.slice(1); // primera letra en mayuscula;
+}
+
+
+// Descarga un archivo
+export function downloadUrlFile(url, filename, cookies = {}) {
+
+  // Convierte las cookies en una cadena
+  const cookieString = cookies.map(cookie => `${cookie.name}=${cookie.value}`).join('; ');
+
+  const options = {
+    rejectUnauthorized: false, // Asi no rebota por certificado SSL
+    headers: {
+      'Cookie': cookieString
+    },
+  };
+
+  const file = fs.createWriteStream(filename);
+  https.get(url, options, (response) => {
+    response.pipe(file);
+  });
 }

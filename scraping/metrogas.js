@@ -1,10 +1,11 @@
 import dotenv from 'dotenv';
-import { dineroToNumber, saveScreenshot, sleep } from '../helpers.js';
+import { dineroToNumber, saveScreenshot, sleep, downloadUrlFile } from '../helpers.js';
 console.clear();
 dotenv.config();
 
 const SERVICIO = 'METROGAS';
 const URL_LOGIN = 'https://portal.micuenta.metrogas.com.ar/sites#ConsumosSaldos-Detalle';
+const URL_INVOICE = 'https://portal.micuenta.metrogas.com.ar/sap/fiori/ovconsumosm360v2//OvServiceHub/api/v1/M360/invoice/isu';
 const HTML_INPUT_EMAIL = '#j_username';
 const HTML_INPUT_PASSWORD = '#j_password';
 
@@ -62,6 +63,7 @@ export async function metrogas(browser) {
     filas.forEach(row => {
       const cells = row.querySelectorAll('td');
       const obj = {
+        facturaCiclo: cells[1]?.querySelector('bdi')?.innerText, // Es el "número de impresión", ejemplo: 250001642845
         periodo: cells[2]?.innerText.trim(),
         monto: cells[3]?.innerText.trim(),
         total: cells[4].querySelector('.sapMObjStatusText')?.innerText.trim(),
@@ -71,6 +73,15 @@ export async function metrogas(browser) {
     })
     return rows;
   })
+
+  // Descargar las facturas fisicas
+  for (const [index, f] of facturas.entries()) {
+    if (!f.facturaCiclo) continue;
+    const url = `${URL_INVOICE}/${f.facturaCiclo}`;
+    const filename= `${SERVICIO}_${index}_${f.facturaCiclo}.pdf`;
+    const cookies = await page.cookies();
+    downloadUrlFile(url, filename, cookies);
+  };
 
   // await sleep(1000);
   // await page.close();
