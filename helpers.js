@@ -9,10 +9,13 @@ export async function sleep(ms = 0) {
 }
 
 /**
- * Devuelve una marca de fecha y hora formateada.
- * @returns {string} La marca de fecha y hora formateada en el formato "YYYY_MM_DD_HH_MM_SS".
+ * Obtiene una marca de tiempo de fecha y hora actual en formato personalizado.
+ * @param {boolean} raw - Indica si se debe devolver la marca de tiempo sin formato.
+ * @returns {string} La marca de tiempo en formato personalizado.
+ * @example getDateTimeStamp() // Retorna: "2021_08_01__23_59_59"
+ * @example getDateTimeStamp(true) // Retorna: "20210801235959333"
  */
-export function getDateTimeStamp() {
+export function getDateTimeStamp(raw = false) {
   const fechaActual = new Date();
   const year = fechaActual.getFullYear();
   const month = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
@@ -20,8 +23,10 @@ export function getDateTimeStamp() {
   const hours = fechaActual.getHours().toString().padStart(2, '0');
   const minutes = fechaActual.getMinutes().toString().padStart(2, '0');
   const seconds = fechaActual.getSeconds().toString().padStart(2, '0');
+  const miliseconds = fechaActual.getMilliseconds().toString().padStart(3, '0');
 
-  return `${year}_${month}_${day}__${hours}_${minutes}_${seconds}`;
+  return raw  ? `${year}${month}${day}${hours}${minutes}${seconds}${miliseconds}`
+              : `${year}_${month}_${day}__${hours}_${minutes}_${seconds}`;
 }
 
 
