@@ -1,8 +1,10 @@
 import dotenv from 'dotenv';
-import { dineroToNumber, saveScreenshot, sleep, downloadUrlFile } from '../helpers.js';
+import { dineroToNumber, saveScreenshot, sleep, downloadUrlFile, getDateTimeStamp } from '../helpers.js';
+import fs from 'node:fs';
 console.clear();
 dotenv.config();
 
+const TIMEOUT = process.env.METROGAS_TIMEOUT ?? 20000;
 const SERVICIO = 'METROGAS';
 const URL_LOGIN = 'https://portal.micuenta.metrogas.com.ar/sites#ConsumosSaldos-Detalle';
 const URL_INVOICE = 'https://portal.micuenta.metrogas.com.ar/sap/fiori/ovconsumosm360v2//OvServiceHub/api/v1/M360/invoice/isu';
@@ -12,8 +14,22 @@ const HTML_INPUT_PASSWORD = '#j_password';
 export async function metrogas(browser) {
   const page = await browser.newPage();
 
-  await page.setDefaultTimeout(60000);
-  await page.setDefaultNavigationTimeout(60000);
+  // Habilitar la escucha de eventos de consola
+  page.on('console', (cMsg) => {
+    fs.appendFileSync(`console_${SERVICIO.toLowerCase()}.txt`, `${getDateTimeStamp()} ▓ ${cMsg.type()?.toUpperCase()} ▓ ${cMsg.text()} ▓ ${cMsg.location()?.url}\n`);
+  });
+
+  // Habilitar la escucha de eventos de consola y guardarlos en un archivo
+  const filenameConsole = `console_${SERVICIO.toLowerCase()}.txt`;
+  page
+    .on('console', cMsg => fs.appendFileSync(filenameConsole, `🖥️ CONSOLE ▓ ${getDateTimeStamp(true)} ▓ ${cMsg.type()?.toUpperCase()} ▓ ${cMsg.text()} ▓ ${cMsg.location()?.url}\n`) )
+    .on('pageerror', ({ message }) => fs.appendFileSync(filenameConsole, `🚨 PAGEERROR ▓ ${getDateTimeStamp(true)} ▓ ${message}\n`))
+    .on('response', cMsg => fs.appendFileSync(filenameConsole, `📡 RESPONSE ▓ ${getDateTimeStamp(true)} ▓ ${cMsg.status()} ${cMsg.url()}\n`))
+    .on('requestfailed', request => fs.appendFileSync(filenameConsole, `❌ REQUESTFAILED ▓ ${getDateTimeStamp(true)} ▓ ${request.failure().errorText} ${request.url()}\n`))
+
+
+  await page.setDefaultTimeout(TIMEOUT);
+  await page.setDefaultNavigationTimeout(TIMEOUT);
 
   console.log(`✔ Ingresando a ${SERVICIO}`);
   
@@ -41,6 +57,7 @@ export async function metrogas(browser) {
   ]);
 
   // Espero que cargue la factura y deuda
+  await saveScreenshot(page, SERVICIO, 11)
   await page.waitForSelector('#__status7-text');
 
   console.log(`✔ Leyendo datos: ${SERVICIO}`)
