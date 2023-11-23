@@ -20,8 +20,8 @@
   "homepage": "https://github.com/SebaM90/InfoServiceBot#readme",
   "dependencies": {
     "date-fns": "^2.30.0",
-    "dotenv": "^16.0.3",
-    "node-fetch": "^3.3.1",
-    "puppeteer": "^20.1.0"
+    "dotenv": "^16.3.1",
+    "node-fetch": "^3.3.2",
+    "puppeteer": "^21.5.2"
   }
 }
