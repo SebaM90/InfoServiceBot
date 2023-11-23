@@ -8,6 +8,22 @@ export async function sleep(ms = 0) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+/**
+ * Devuelve una marca de fecha y hora formateada.
+ * @returns {string} La marca de fecha y hora formateada en el formato "YYYY_MM_DD_HH_MM_SS".
+ */
+export function getDateTimeStamp() {
+  const fechaActual = new Date();
+  const year = fechaActual.getFullYear();
+  const month = (fechaActual.getMonth() + 1).toString().padStart(2, '0');
+  const day = fechaActual.getDate().toString().padStart(2, '0');
+  const hours = fechaActual.getHours().toString().padStart(2, '0');
+  const minutes = fechaActual.getMinutes().toString().padStart(2, '0');
+  const seconds = fechaActual.getSeconds().toString().padStart(2, '0');
+
+  return `${year}_${month}_${day}__${hours}_${minutes}_${seconds}`;
+}
+
 
 // Convierte dinero string en numero: 'Deuda Total $ 7.994,98' → '7994.98'
 /**

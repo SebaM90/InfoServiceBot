@@ -1,9 +1,10 @@
 import dotenv from 'dotenv';
+import fs from 'node:fs'
 import puppeteer from 'puppeteer';
 import { aysa } from './scraping/aysa.js';
 import { edesur } from './scraping/edesur.js';
 import { metrogas } from './scraping/metrogas.js';
-import { deleteCapturas, diasHastaHoy, dineroToNumber, numeroToDinero } from './helpers.js';
+import { deleteCapturas, diasHastaHoy, dineroToNumber, numeroToDinero, getDateTimeStamp } from './helpers.js';
 
 console.clear();
 dotenv.config();
@@ -35,7 +36,7 @@ dotenv.config();
                 '⌛ TIEMPO:', ((performance.now()-timeStart)/1000).toFixed(1) + ' s'
                 );
     console.log(
-                '⛔ PROBLEMAS:', (errores.length ?? 0), '\t\t' +
+                '⛔ ERRORES:', (errores.length ?? 0), '\t\t' +
                 getTextoDeuda(total) + ':' , numeroToDinero(total)
                 );
     console.log('•'.repeat(70), '\n')
@@ -52,9 +53,22 @@ dotenv.config();
 
     // Errores
     if (errores && errores.length) {
-      console.log('•'.repeat(60))
-      console.log('⛔ PROBLEMAS:')
-      errores.forEach( p => console.log('\n', p) )
+
+      // Detalle de errores en archivo
+      const filename = `errores_${getDateTimeStamp()}.txt`;
+      fs.writeFileSync(filename, `${(new Date()).toLocaleString()}\n\n`);
+      errores.forEach(error => {
+        const todasLasPropiedades = Object.getOwnPropertyNames(error)?.sort(); // Obtiene todas las propiedades del objeto incluyendo las no-enumerables
+        todasLasPropiedades.forEach((prop) => fs.appendFileSync(filename, `${prop.toUpperCase()}: ${error[prop]}\n`) );
+        fs.appendFileSync(filename, '\n');
+      });
+
+      // Resumen de errores en consola
+      console.log('⛔ ERRORES RESUMEN:')
+      errores.forEach( p => console.log('\t', p?.name + ': ', p?.message?.length>20 ? p.message.slice(0,60)+'...' : p.message) );
+      
+      console.log('\x1b[31m%s\x1b[0m', '\n❗Se guardó el detalle completo de errores en el archivo:', filename, '❗');
+      console.log('•'.repeat(60));
     }
   })
 
