@@ -5,3 +5,6 @@ node_modules
 captura*.png
 
 *.pdf
+
+console_*.txt
+errores_*.txt
