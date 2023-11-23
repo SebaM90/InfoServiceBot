@@ -15,11 +15,17 @@ export async function aysa(browser) {
 
   // Habilitar la escucha de eventos de consola y guardarlos en un archivo
   const filenameConsole = `console_${SERVICIO.toLowerCase()}.txt`;
+  fs.rmSync(filenameConsole, { force: true });
   page
-  .on('console', cMsg => fs.appendFileSync(filenameConsole, `🖥️ CONSOLE ▓ ${getDateTimeStamp(true)} ▓ ${cMsg.type()?.toUpperCase()} ▓ ${cMsg.text()} ▓ ${cMsg.location()?.url}\n`) )
-  .on('pageerror', ({ message }) => fs.appendFileSync(filenameConsole, `🚨 PAGEERROR ▓ ${getDateTimeStamp(true)} ▓ ${message}\n`))
-  .on('response', cMsg => fs.appendFileSync(filenameConsole, `📡 RESPONSE ▓ ${getDateTimeStamp(true)} ▓ ${cMsg.status()} ${cMsg.url()}\n`))
-  .on('requestfailed', request => fs.appendFileSync(filenameConsole, `❌ REQUESTFAILED ▓ ${getDateTimeStamp(true)} ▓ ${request.failure().errorText} ${request.url()}\n`))
+    .on('console', cMsg =>
+          fs.appendFileSync(filenameConsole, `🖥️ CONSOLE       ▓ ${getDateTimeStamp(true)} ▓ ${cMsg.type()?.toUpperCase()} ▓ ${cMsg.location()?.url} ▓ ${cMsg.text()}\n`) )
+    .on('response', cMsg =>
+          fs.appendFileSync(filenameConsole, `📡 RESPONSE      ▓ ${getDateTimeStamp(true)} ▓ ${cMsg.status()} ▓ ${cMsg.url()}\n`))
+    .on('requestfailed', request =>
+          fs.appendFileSync(filenameConsole, `❌ REQUESTFAILED ▓ ${getDateTimeStamp(true)} ▓ ${request.failure().errorText} ▓ ${request.url()}\n`))
+    .on('pageerror', ({ message }) =>
+          fs.appendFileSync(filenameConsole, `🚨 PAGEERROR     ▓ ${getDateTimeStamp(true)} ▓ ${message}\n`));
+
 
   await page.setDefaultTimeout(TIMEOUT);
   await page.setDefaultNavigationTimeout(TIMEOUT);
@@ -52,10 +58,25 @@ export async function aysa(browser) {
 
   // Espero que cargue la factura y deuda
   await saveScreenshot(page, SERVICIO, 11)
-  await page.waitForSelector('span.textDeuda');
+  await sleep(3000);
 
   console.log(`✔ Leyendo datos: ${SERVICIO}`);
-  const result = await page.$eval('span.textDeuda', span => span.innerText); // Su saldo es $ 7.997,67
+  // Busco si hay deuda o no
+  const result = await page.evaluate(() => {
+    try {
+      const saldo = document.querySelector('span.textDeuda');
+      if (saldo) return saldo.innerText; // "Su saldo es $ 7.997,67"
+
+      const sinDeuda = document.querySelector('#__text34');
+      if (sinDeuda) return sinDeuda?.innerText; // "La cuenta no posee deuda"
+
+      return '$0';
+    } catch (error) {
+      console.error(`😎 Error en page.evaluate: ${error.message}`);
+      return '$0';
+    }
+  });
+
 
   await saveScreenshot(page, SERVICIO, 2)
 

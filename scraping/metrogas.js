@@ -14,19 +14,18 @@ const HTML_INPUT_PASSWORD = '#j_password';
 export async function metrogas(browser) {
   const page = await browser.newPage();
 
-  // Habilitar la escucha de eventos de consola
-  page.on('console', (cMsg) => {
-    fs.appendFileSync(`console_${SERVICIO.toLowerCase()}.txt`, `${getDateTimeStamp()} ▓ ${cMsg.type()?.toUpperCase()} ▓ ${cMsg.text()} ▓ ${cMsg.location()?.url}\n`);
-  });
-
   // Habilitar la escucha de eventos de consola y guardarlos en un archivo
   const filenameConsole = `console_${SERVICIO.toLowerCase()}.txt`;
+  fs.rmSync(filenameConsole, { force: true });
   page
-    .on('console', cMsg => fs.appendFileSync(filenameConsole, `🖥️ CONSOLE ▓ ${getDateTimeStamp(true)} ▓ ${cMsg.type()?.toUpperCase()} ▓ ${cMsg.text()} ▓ ${cMsg.location()?.url}\n`) )
-    .on('pageerror', ({ message }) => fs.appendFileSync(filenameConsole, `🚨 PAGEERROR ▓ ${getDateTimeStamp(true)} ▓ ${message}\n`))
-    .on('response', cMsg => fs.appendFileSync(filenameConsole, `📡 RESPONSE ▓ ${getDateTimeStamp(true)} ▓ ${cMsg.status()} ${cMsg.url()}\n`))
-    .on('requestfailed', request => fs.appendFileSync(filenameConsole, `❌ REQUESTFAILED ▓ ${getDateTimeStamp(true)} ▓ ${request.failure().errorText} ${request.url()}\n`))
-
+    .on('console', cMsg =>
+          fs.appendFileSync(filenameConsole, `🖥️ CONSOLE       ▓ ${getDateTimeStamp(true)} ▓ ${cMsg.type()?.toUpperCase()} ▓ ${cMsg.location()?.url} ▓ ${cMsg.text()}\n`) )
+    .on('response', cMsg =>
+          fs.appendFileSync(filenameConsole, `📡 RESPONSE      ▓ ${getDateTimeStamp(true)} ▓ ${cMsg.status()} ▓ ${cMsg.url()}\n`))
+    .on('requestfailed', request =>
+          fs.appendFileSync(filenameConsole, `❌ REQUESTFAILED ▓ ${getDateTimeStamp(true)} ▓ ${request.failure().errorText} ▓ ${request.url()}\n`))
+    .on('pageerror', ({ message }) =>
+          fs.appendFileSync(filenameConsole, `🚨 PAGEERROR     ▓ ${getDateTimeStamp(true)} ▓ ${message}\n`));
 
   await page.setDefaultTimeout(TIMEOUT);
   await page.setDefaultNavigationTimeout(TIMEOUT);
@@ -67,8 +66,8 @@ export async function metrogas(browser) {
 
   await saveScreenshot(page, SERVICIO, 2)
   // Click en Boton de "Facturas Impagass"
-  await page.waitForSelector('#application-ConsumosSaldos-Detalle-component---Main--tab1Id');
-  await page.click('#application-ConsumosSaldos-Detalle-component---Main--tab1Id');
+  await page.waitForSelector('#application-ConsumosSaldos-Detalle-component---Main--tab2Id');
+  await page.click('#application-ConsumosSaldos-Detalle-component---Main--tab2Id');
 
   await sleep(1000);
 
