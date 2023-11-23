@@ -15,7 +15,7 @@ dotenv.config();
   const browser = await puppeteer.launch({
     headless: 'new',
     args: ['--start-maximized'],
-    defaultViewpor: { width: 1200, height: 1000 }
+    defaultViewport: { width: 1200, height: 1000 }
   });
 
   await deleteCapturas();
