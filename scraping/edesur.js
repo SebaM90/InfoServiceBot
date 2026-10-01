@@ -1,16 +1,25 @@
-import dotenv from 'dotenv';
 import { dineroToNumber, saveScreenshot, sleep, getDateTimeStamp } from '../helpers.js';
 import fs from 'node:fs';
-console.clear();
-dotenv.config();
-
-const TIMEOUT = process.env.EDESUR_TIMEOUT ?? 20000;
 const SERVICIO = 'EDESUR';
 const URL_LOGIN = 'https://ov.edesur.com.ar/login';
 const HTML_INPUT_EMAIL = 'form input[type="email"]';
 const HTML_INPUT_PASSWORD = 'form input[type="password"]';
 
+export function readEdesurBalance() {
+  const data = {};
+  document.querySelectorAll('div.display-sm p').forEach((element, index, elements) => {
+    if (index % 2 === 0) data[element.innerText] = elements[index + 1]?.innerText;
+  });
+  const hasNoDebt = Array.from(document.querySelectorAll('h5 + div.acciones-estado-cuenta span'))
+    .some(element => (element.innerText ?? '').replace(/\s+/g, ' ').trim().toUpperCase()
+      .includes('SU CUENTA NO POSEE DEUDA'));
+  if (hasNoDebt) data['TOTAL A PAGAR'] = '$ 0';
+  if (!data['TOTAL A PAGAR']) throw new Error('Edesur balance element not found');
+  return data;
+}
+
 export async function edesur(browser) {
+  const TIMEOUT = Number(process.env.EDESUR_TIMEOUT ?? 20000);
   const page = await browser.newPage();
 
   // Habilitar la escucha de eventos de consola y guardarlos en un archivo
@@ -39,7 +48,7 @@ export async function edesur(browser) {
 
   await page.waitForSelector('asl-google-signin-button>div>iframe');
 
-  sleep(1000);
+  await sleep(1000);
   
   await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
@@ -67,22 +76,7 @@ export async function edesur(browser) {
   await saveScreenshot(page, SERVICIO, 2)
 
   // Leo los datos
-  const result = await page.evaluate((a) => {
-    let data = {};
-    document.querySelectorAll('div.display-sm p').forEach( (el, index, lista) => {
-        // 1er Vencimiento, TOTAL FACTURA, TOTAL A PAGAR
-        // if (index % 2 === 0) data.push({concepto: el.innerText, valor: lista[index+1]?.innerText});
-        if (index % 2 === 0) data[el.innerText] = lista[index+1]?.innerText;
-    });
-
-    const isSinDeuda = Array.from(document.querySelectorAll('h5 + div.acciones-estado-cuenta span'))
-                                ?.map( e => e.innerText?.trim()?.toUpperCase() )
-                                ?.includes('SU CUENTA NO POSEE DEUDA') ?? false // "Al día de la fecha, su cuenta no posee deuda.""
-
-    if ( !data['TOTAL A PAGAR'] || isSinDeuda ) data['TOTAL A PAGAR'] = '$ 0';
-
-    return data;
-  }, SERVICIO);
+  const result = await page.evaluate(readEdesurBalance);
 
   // await page.close();
   console.log(`✅ FINALIZADO: ${SERVICIO}`)

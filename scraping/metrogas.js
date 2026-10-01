@@ -1,10 +1,5 @@
-import dotenv from 'dotenv';
 import { dineroToNumber, saveScreenshot, sleep, downloadUrlFile, getDateTimeStamp } from '../helpers.js';
 import fs from 'node:fs';
-console.clear();
-dotenv.config();
-
-const TIMEOUT = process.env.METROGAS_TIMEOUT ?? 20000;
 const SERVICIO = 'METROGAS';
 const URL_LOGIN = 'https://portal.micuenta.metrogas.com.ar/sites#ConsumosSaldos-Detalle';
 const URL_INVOICE = 'https://portal.micuenta.metrogas.com.ar/sap/fiori/ovconsumosm360v2//OvServiceHub/api/v1/M360/invoice/isu';
@@ -12,6 +7,7 @@ const HTML_INPUT_EMAIL = '#j_username';
 const HTML_INPUT_PASSWORD = '#j_password';
 
 export async function metrogas(browser) {
+  const TIMEOUT = Number(process.env.METROGAS_TIMEOUT ?? 20000);
   const page = await browser.newPage();
 
   // Habilitar la escucha de eventos de consola y guardarlos en un archivo
@@ -95,8 +91,12 @@ export async function metrogas(browser) {
     if (!f.facturaCiclo) continue;
     const url = `${URL_INVOICE}/${f.facturaCiclo}`;
     const filename= `${SERVICIO}_${index}_${f.facturaCiclo}.pdf`;
-    const cookies = await page.cookies();
-    downloadUrlFile(url, filename, cookies);
+    const host = new URL(url).hostname;
+    const cookies = (await page.browserContext().cookies()).filter(cookie => {
+      const domain = cookie.domain.replace(/^\./, '');
+      return host === domain || (cookie.domain.startsWith('.') && host.endsWith(`.${domain}`));
+    });
+    await downloadUrlFile(url, filename, cookies);
   };
 
   // await sleep(1000);

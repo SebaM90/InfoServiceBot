@@ -1,16 +1,12 @@
-import dotenv from 'dotenv';
 import { dineroToNumber, saveScreenshot, sleep, getDateTimeStamp } from '../helpers.js';
 import fs from 'node:fs';
-console.clear();
-dotenv.config();
-
-const TIMEOUT = process.env.AYSA_TIMEOUT ?? 20000;
 const SERVICIO = 'AySA';
 const URL_LOGIN = 'https://portal.web.aysa.com.ar/index.html#/estadocuenta';
 const HTML_INPUT_EMAIL = '#j_username';
 const HTML_INPUT_PASSWORD = '#j_password';
 
 export async function aysa(browser) {
+  const TIMEOUT = Number(process.env.AYSA_TIMEOUT ?? 20000);
   const page = await browser.newPage();
 
   // Habilitar la escucha de eventos de consola y guardarlos en un archivo
@@ -70,10 +66,9 @@ export async function aysa(browser) {
       const sinDeuda = document.querySelector('#__text34');
       if (sinDeuda) return sinDeuda?.innerText; // "La cuenta no posee deuda"
 
-      return '$0';
+      throw new Error('AySA balance element not found');
     } catch (error) {
-      console.error(`😎 Error en page.evaluate: ${error.message}`);
-      return '$0';
+      throw error;
     }
   });
 
@@ -109,6 +104,6 @@ export async function aysa(browser) {
   return {
     servicio: SERVICIO,
     facturas: facturas,
-    total: dineroToNumber(result)
+    total: result?.trim().toUpperCase() === 'LA CUENTA NO POSEE DEUDA' ? 0 : dineroToNumber(result)
   }
 };
